@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'modules/login/pages/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Dasar'),
+      home: LoginPage(),
     );
   }
 }

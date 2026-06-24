@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inixindo_flutter/modules/location/pages/location.dart';
 import 'package:inixindo_flutter/modules/login/data/loginApi.dart';
 import 'package:inixindo_flutter/modules/login/data/loginDb.dart';
 
@@ -72,8 +73,14 @@ class _LoginPageState extends State<LoginPage> {
           backgroundColor: Colors.green,
         ),
       );
-      // Di sini nanti bisa tambahkan navigasi, contoh:
-      // Navigator.pushReplacementNamed(context, '/home');
+
+      // Navigasi ke halaman LocationPage
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LocationPage()),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

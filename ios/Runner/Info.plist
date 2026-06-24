@@ -53,6 +53,16 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Akses kamera untuk foto</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Akses mikrofon untuk rekam video</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Akses lokasi untuk tracking</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Akses lokasi untuk tracking</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Akses lokasi untuk tracking</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

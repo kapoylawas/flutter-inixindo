@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'modules/login/pages/login.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 

@@ -37,6 +37,7 @@ class Data {
   String? createdAt;
   String? updatedAt;
   String? publishedAt;
+  String? kontributor;
 
   Data({
     this.id,
@@ -49,19 +50,26 @@ class Data {
     this.createdAt,
     this.updatedAt,
     this.publishedAt,
+    this.kontributor,
   });
 
   Data.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['id'] is int ? json['id'] as int : int.tryParse(json['id']?.toString() ?? '');
     documentId = json['documentId'];
-    placeName = json['placeName'];
+    placeName = json['placeName'] ?? json['nama'];
     placeType = json['placeType'];
-    comment = json['comment'];
-    latitude = json['latitude'];
-    longitude = json['longitude'];
+    comment = json['comment'] ?? json['keterangan'];
+    
+    final latVal = json['latitude'] ?? json['lat'];
+    latitude = latVal is num ? latVal.toDouble() : double.tryParse(latVal?.toString() ?? '');
+    
+    final lonVal = json['longitude'] ?? json['lon'];
+    longitude = lonVal is num ? lonVal.toDouble() : double.tryParse(lonVal?.toString() ?? '');
+    
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     publishedAt = json['publishedAt'];
+    kontributor = json['kontributor'];
   }
 
   Map<String, dynamic> toJson() {
@@ -76,6 +84,7 @@ class Data {
     data['createdAt'] = this.createdAt;
     data['updatedAt'] = this.updatedAt;
     data['publishedAt'] = this.publishedAt;
+    data['kontributor'] = this.kontributor;
     return data;
   }
 }

@@ -19,7 +19,7 @@ class Loginapi {
           'identifier': email,
           'password': password,
         }),
-      );
+      ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = jsonDecode(response.body);

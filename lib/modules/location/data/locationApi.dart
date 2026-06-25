@@ -253,4 +253,167 @@ class Locationapi {
       return false;
     }
   }
+
+  Future<bool> postLokasiPhp({
+    required String nama,
+    required String keterangan,
+    required String lat,
+    required String lon,
+    required String kontributor,
+  }) async {
+    try {
+      final url = Uri.parse(LOKASI_PHP_URL);
+
+      final Map<String, String> requestHeaders = <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      };
+
+      final Map<String, String> requestBody = {
+        'aksi': 'simpan',
+        'lat': lat,
+        'lon': lon,
+        'nama': nama,
+        'keterangan': keterangan,
+        'kontributor': kontributor,
+      };
+
+      // DEBUG: Tampilkan URL, headers, dan body
+      print('=== DEBUG: KIRIM DATA PHP LOKASI ===');
+      print('URL    : $url');
+      print('Headers: $requestHeaders');
+      print('Body   : $requestBody');
+      print('==================================');
+
+      final response = await http.post(
+        url,
+        headers: requestHeaders,
+        body: requestBody,
+      ).timeout(const Duration(seconds: 5));
+
+      // DEBUG: Tampilkan respon server
+      print('=== DEBUG: HASIL RESPON SERVER PHP ===');
+      print('Status Code: ${response.statusCode}');
+      print('Body Respon: ${response.body}');
+      print('==================================');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        return jsonResponse['status'] == 'success';
+      } else {
+        print(
+          'Gagal mengirim data lokasi PHP: ${response.statusCode} - ${response.body}',
+        );
+        return false;
+      }
+    } catch (e) {
+      print('Terjadi kesalahan saat memanggil API post lokasi PHP: $e');
+      return false;
+    }
+  }
+
+  Future<bool> updateLokasiPhp({
+    required dynamic id,
+    required String nama,
+    required String keterangan,
+    required String lat,
+    required String lon,
+    required String kontributor,
+  }) async {
+    try {
+      final url = Uri.parse(LOKASI_PHP_URL);
+
+      final Map<String, String> requestHeaders = <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      };
+
+      final Map<String, String> requestBody = {
+        'aksi': 'simpan',
+        'id': id.toString(),
+        'lat': lat,
+        'lon': lon,
+        'nama': nama,
+        'keterangan': keterangan,
+        'kontributor': kontributor,
+      };
+
+      // DEBUG: Tampilkan URL, headers, dan body
+      print('=== DEBUG: UPDATE DATA PHP LOKASI ===');
+      print('URL    : $url');
+      print('Headers: $requestHeaders');
+      print('Body   : $requestBody');
+      print('==================================');
+
+      final response = await http.post(
+        url,
+        headers: requestHeaders,
+        body: requestBody,
+      ).timeout(const Duration(seconds: 5));
+
+      // DEBUG: Tampilkan respon server
+      print('=== DEBUG: HASIL RESPON SERVER PHP UPDATE ===');
+      print('Status Code: ${response.statusCode}');
+      print('Body Respon: ${response.body}');
+      print('=============================================');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        return jsonResponse['status'] == 'success';
+      } else {
+        print(
+          'Gagal mengupdate data lokasi PHP: ${response.statusCode} - ${response.body}',
+        );
+        return false;
+      }
+    } catch (e) {
+      print('Terjadi kesalahan saat memanggil API update lokasi PHP: $e');
+      return false;
+    }
+  }
+
+  Future<bool> deleteLokasiPhp(dynamic id) async {
+    try {
+      final url = Uri.parse(LOKASI_PHP_URL);
+
+      final Map<String, String> requestHeaders = <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      };
+
+      final Map<String, String> requestBody = {
+        'aksi': 'hapus',
+        'id': id.toString(),
+      };
+
+      // DEBUG: Tampilkan URL, headers, dan body
+      print('=== DEBUG: DELETE DATA PHP LOKASI ===');
+      print('URL    : $url');
+      print('Headers: $requestHeaders');
+      print('Body   : $requestBody');
+      print('==================================');
+
+      final response = await http.post(
+        url,
+        headers: requestHeaders,
+        body: requestBody,
+      ).timeout(const Duration(seconds: 5));
+
+      // DEBUG: Tampilkan respon server
+      print('=== DEBUG: HASIL RESPON SERVER PHP DELETE ===');
+      print('Status Code: ${response.statusCode}');
+      print('Body Respon: ${response.body}');
+      print('=============================================');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        return jsonResponse['status'] == 'success';
+      } else {
+        print(
+          'Gagal menghapus data lokasi PHP: ${response.statusCode} - ${response.body}',
+        );
+        return false;
+      }
+    } catch (e) {
+      print('Terjadi kesalahan saat memanggil API delete lokasi PHP: $e');
+      return false;
+    }
+  }
 }

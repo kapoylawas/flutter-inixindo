@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:inixindo_flutter/modules/location/data/locationApi.dart';
 import 'package:inixindo_flutter/modules/location/services/locationServices.dart';
 import 'package:inixindo_flutter/modules/location/models/locationResponseModel.dart';
+import 'package:inixindo_flutter/modules/login/data/loginDb.dart';
 
 class LocationForm extends StatefulWidget {
   final Data? trackingData;
-  const LocationForm({super.key, this.trackingData});
+  final bool isPhpApi;
+  const LocationForm({super.key, this.trackingData, this.isPhpApi = false});
 
   @override
   State<LocationForm> createState() => _LocationFormState();
@@ -15,8 +17,8 @@ class _LocationFormState extends State<LocationForm> {
   final _formKey = GlobalKey<FormState>();
   final _placeNameController = TextEditingController();
   final _commentController = TextEditingController();
-
   final _placeTypeController = TextEditingController();
+  final _contributorController = TextEditingController();
 
   final LocationService _locationService = LocationService();
   final Locationapi _locationApi = Locationapi();
@@ -25,8 +27,6 @@ class _LocationFormState extends State<LocationForm> {
   bool _isSaving = false;
   double? _latitude;
   double? _longitude;
-
-
 
   @override
   void initState() {
@@ -37,8 +37,22 @@ class _LocationFormState extends State<LocationForm> {
       _commentController.text = widget.trackingData!.comment ?? '';
       _latitude = widget.trackingData!.latitude;
       _longitude = widget.trackingData!.longitude;
+      _contributorController.text = widget.trackingData!.kontributor ?? '';
     } else {
       _getCurrentDeviceLocation();
+      if (widget.isPhpApi) {
+        _loadDefaultContributor();
+      }
+    }
+  }
+
+  Future<void> _loadDefaultContributor() async {
+    final session = await LoginDb.instance.getSession();
+    final username = session?.user?.name ?? session?.user?.username ?? '';
+    if (mounted) {
+      setState(() {
+        _contributorController.text = username;
+      });
     }
   }
 
@@ -47,6 +61,7 @@ class _LocationFormState extends State<LocationForm> {
     _placeNameController.dispose();
     _commentController.dispose();
     _placeTypeController.dispose();
+    _contributorController.dispose();
     super.dispose();
   }
 
@@ -105,22 +120,42 @@ class _LocationFormState extends State<LocationForm> {
       _isSaving = true;
     });
 
-    final success = widget.trackingData != null
-        ? await _locationApi.updateTracking(
-            id: widget.trackingData!.documentId ?? widget.trackingData!.id?.toString(),
-            placeName: _placeNameController.text.trim(),
-            placeType: _placeTypeController.text.trim(),
-            comment: _commentController.text.trim(),
-            latitude: _latitude!,
-            longitude: _longitude!,
-          )
-        : await _locationApi.postTracking(
-            placeName: _placeNameController.text.trim(),
-            placeType: _placeTypeController.text.trim(),
-            comment: _commentController.text.trim(),
-            latitude: _latitude!,
-            longitude: _longitude!,
-          );
+    final bool success;
+    if (widget.isPhpApi) {
+      success = widget.trackingData != null
+          ? await _locationApi.updateLokasiPhp(
+              id: widget.trackingData!.id,
+              nama: _placeNameController.text.trim(),
+              keterangan: _commentController.text.trim(),
+              lat: _latitude!.toString(),
+              lon: _longitude!.toString(),
+              kontributor: _contributorController.text.trim(),
+            )
+          : await _locationApi.postLokasiPhp(
+              nama: _placeNameController.text.trim(),
+              keterangan: _commentController.text.trim(),
+              lat: _latitude!.toString(),
+              lon: _longitude!.toString(),
+              kontributor: _contributorController.text.trim(),
+            );
+    } else {
+      success = widget.trackingData != null
+          ? await _locationApi.updateTracking(
+              id: widget.trackingData!.documentId ?? widget.trackingData!.id?.toString(),
+              placeName: _placeNameController.text.trim(),
+              placeType: _placeTypeController.text.trim(),
+              comment: _commentController.text.trim(),
+              latitude: _latitude!,
+              longitude: _longitude!,
+            )
+          : await _locationApi.postTracking(
+              placeName: _placeNameController.text.trim(),
+              placeType: _placeTypeController.text.trim(),
+              comment: _commentController.text.trim(),
+              latitude: _latitude!,
+              longitude: _longitude!,
+            );
+    }
 
     if (mounted) {
       setState(() {
@@ -290,23 +325,42 @@ class _LocationFormState extends State<LocationForm> {
               const SizedBox(height: 16),
 
               // Input Tipe Tempat
-              TextFormField(
-                controller: _placeTypeController,
-                decoration: InputDecoration(
-                  labelText: 'Tipe Tempat',
-                  hintText: 'Masukkan tipe tempat (misal: Kantor, Rumah, Toko)',
-                  prefixIcon: const Icon(Icons.category_outlined),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Tipe tempat wajib diisi';
-                  }
-                  return null;
-                },
-              ),
+              // Input Tipe Tempat atau Kontributor
+              widget.isPhpApi
+                  ? TextFormField(
+                      controller: _contributorController,
+                      decoration: InputDecoration(
+                        labelText: 'Kontributor',
+                        hintText: 'Masukkan nama kontributor',
+                        prefixIcon: const Icon(Icons.person_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Nama kontributor wajib diisi';
+                        }
+                        return null;
+                      },
+                    )
+                  : TextFormField(
+                      controller: _placeTypeController,
+                      decoration: InputDecoration(
+                        labelText: 'Tipe Tempat',
+                        hintText: 'Masukkan tipe tempat (misal: Kantor, Rumah, Toko)',
+                        prefixIcon: const Icon(Icons.category_outlined),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Tipe tempat wajib diisi';
+                        }
+                        return null;
+                      },
+                    ),
               const SizedBox(height: 16),
 
               // Input Catatan / Comment
